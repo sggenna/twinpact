@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TwinPact - Personality Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="quiz.css">
+    <style>
+        /* Typeform-style quiz styles */
+        body {
+            overflow-x: hidden;
+            background: linear-gradient(to bottom, #f2ae72, #4f1111);
+        }
+        
+        .quiz-container {
+            max-width: 600px;
+            position: relative;
+            overflow: visible;
+            min-height: auto;
+            height: auto;
+            margin: 0 auto 1rem;
+            background: #F6F4F0;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            padding: 1rem 1.5rem;
+        }
+        
+        .logo {
+            height: 70px;
+            width: 70px;
+            display: block;
+            margin: 0 auto 0.5rem;
+        }
+        
+        .questions-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: auto;
+            height: auto;
+            margin-bottom: 45px; /* Reduced space for footer */
+        }
+        
+        .question {
+            position: absolute;
+            max-width: 500px;
+            width: auto;
+            min-width: 300px;
+            left: 50%;
+            top: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            transition: opacity 0.3s ease;
+            padding: 0.5rem 1rem;
+            opacity: 0;
+            pointer-events: none;
+            height: auto;
+        }
+        
+        .question.active {
+            transform: translateX(-50%) translateY(-50%);
+            opacity: 1;
+            pointer-events: all;
+            z-index: 2;
+        }
+        
+        .question.previous, .question.next {
+            opacity: 0;
+        }
+        
+        .question label {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: block;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #4f1111;
+        }
+        
+        .typeform-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .control-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .control-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .progress-container {
+            flex-grow: 1;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin: 0 2rem;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #4f1111;
+            transition: width 0.3s ease;
+        }
+        
+        .question-counter {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Style adjustments for TypeForm look */
+        .mc-question .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            margin-bottom: 0.75rem;
+            width: 100%;
+        }
+        
+        .option {
+            transition: transform 0.2s ease;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #E0E0E0;
+            border-radius: 12px;
+            cursor: pointer;
+            background: white;
+            width: 100%;
+            min-width: 250px;
+            display: block;
+            text-align: center;
+        }
+        
+        /* Add space between radio button and text */
+        .option input[type="radio"] {
+            margin-right: 8px;
+        }
+        
+        .option:hover {
+            transform: translateY(-2px);
+            border-color: #4f1111;
+        }
+        
+        .slider-question input[type="range"] {
+            width: 100%;
+            margin: 1.5rem 0;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .page-navigation {
+            text-align: center;
+            margin: 2rem auto;
+        }
+        
+        .page-btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            background-color: #4f1111;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .page-btn:hover {
+            background-color: #6a1a1a;
+            transform: translateY(-2px);
+        }
+        
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #F6F4F0;
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        /* Quiz pages */
+        .quiz-page-1, .quiz-page-2 {
+            display: none;
+        }
+        
+        .quiz-page-1.active, .quiz-page-2.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <form id="quizForm">
+        <!-- Page 1 -->
+        <div class="quiz-page-1 active">
+            <div class="quiz-container">
+                <img src="logo.png" alt="The Twin Pact" class="logo">
+                <div class="questions-wrapper">
+                    <!-- First 8 questions -->
+                    <div class="question mc-question" data-question="1">
+                        <label>1. What does your fridge typically look like?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="fridge" value="basic">
+                                <span>Ketchup, soy sauce and maybe a Poland Spring</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="fridge" value="stocked">
+                                <span>Stocked up with groceries</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="fridge" value="leftovers">
+                                <span>Old leftovers I swear I'm going to eat</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question slider-question" data-question="2">
+                        <label>2. Is reading the news important?</label>
+                        <input type="range" min="0" max="100" value="50" name="news_importance">
+                        <div class="slider-labels">
+                            <span>Very</span>
+                            <span>Not at all</span>
+                        </div>
+                    </div>
+                    
+                    <div class="question mc-question" data-question="3">
+                        <label>3. How early do you do your assignments?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="assignments" value="weeks" required>
+                                <span>Weeks before</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="assignments" value="days">
+                                <span>Couple days before</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="assignments" value="last_minute">
+                                <span>Right before class</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question slider-question" data-question="4">
+                        <label>4. Are you the person who texts first?</label>
+                        <input type="range" min="0" max="100" value="50" name="text_first">
+                        <div class="slider-labels">
+                            <span>Always</span>
+                            <span>Never</span>
+                        </div>
+                    </div>
+
+                    <div class="question mc-question" data-question="5">
+                        <label>5. Do you stand or sit on the subway?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="subway" value="stand_jeans" required>
+                                <span>Stand, can't ruin my nice jeans</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="subway" value="pole_gloves">
+                                <span>I'm holding on to the pole with gloves</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="subway" value="sit">
+                                <span>Sit, I'm way too tired</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="subway" value="uber">
+                                <span>Train? I take an Uber</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question slider-question" data-question="6">
+                        <label>6. Is it important to be friends with similar people?</label>
+                        <input type="range" min="0" max="100" value="50" name="similar_friends">
+                        <div class="slider-labels">
+                            <span>Very important</span>
+                            <span>Not important</span>
+                        </div>
+                    </div>
+
+                    <div class="question mc-question" data-question="7">
+                        <label>7. If we disagree, what are you doing?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="disagreement" value="quiet" required>
+                                <span>Staying quiet and make up a fake scenario where I actually confront you</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="disagreement" value="confront">
+                                <span>Telling you what I think straight up</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="disagreement" value="gossip">
+                                <span>Probably gossip about it to my mom</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="8">
+                        <label>Ready for more questions?</label>
+                        <p style="text-align: center; margin: 2rem 0; color: #4f1111;">You've completed the first half! Click below to continue to the second part.</p>
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <button type="button" class="page-btn" id="goToPage2">Continue to Part 2</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="typeform-footer">
+                    <div class="question-counter">Question <span id="currentQuestion1">1</span> of <span id="totalQuestions1">15</span></div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar1" style="width: 0%"></div>
+                    </div>
+                    <div class="controls">
+                        <button type="button" class="control-btn" id="prevBtn1" disabled>&larr;</button>
+                        <button type="button" class="control-btn" id="nextBtn1">&rarr;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page 2 -->
+        <div class="quiz-page-2">
+            <div class="quiz-container">
+                <img src="logo.png" alt="The Twin Pact" class="logo">
+                <div class="questions-wrapper">
+                    <!-- Last 7 questions -->
+                    <div class="question slider-question" data-question="8">
+                        <label>8. Are you more "work to live" or "live to work"?</label>
+                        <input type="range" min="0" max="100" value="50" name="work_life">
+                        <div class="slider-labels">
+                            <span>Work to live</span>
+                            <span>Live to work</span>
+                        </div>
+                    </div>
+
+                    <div class="question mc-question" data-question="9">
+                        <label>9. Do you make eye contact with strangers?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="eye_contact" value="yes" required>
+                                <span>Yes, I don't care</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="eye_contact" value="no">
+                                <span>No, always have my headphones and hood up</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question slider-question" data-question="10">
+                        <label>10. How would you describe your work ethic?</label>
+                        <input type="range" min="0" max="100" value="50" name="work_ethic">
+                        <div class="slider-labels">
+                            <span>I show up. I conquer.</span>
+                            <span>Give me 2-3 weeks</span>
+                        </div>
+                    </div>
+
+                    <div class="question mc-question" data-question="11">
+                        <label>11. Best part of college?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="college_best" value="butler" required>
+                                <span>The long nights at Butler with friends</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="college_best" value="social">
+                                <span>Getting into Columbia clubs and off a Fiji Partiful waitlist</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="college_best" value="academic">
+                                <span>Academic validation from the professors</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question slider-question" data-question="12">
+                        <label>12. Strangers are opportunities to connect?</label>
+                        <input type="range" min="0" max="100" value="50" name="stranger_connection">
+                        <div class="slider-labels">
+                            <span>Networking</span>
+                            <span>Stranger danger</span>
+                        </div>
+                    </div>
+
+                    <div class="question mc-question" data-question="13">
+                        <label>13. Which UWS restaurant do you identify with?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="restaurant" value="popupbagels" required>
+                                <span>Pop-up bagels</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="restaurant" value="hooda">
+                                <span>Hooda Halal</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="restaurant" value="rotiroll">
+                                <span>Roti Roll</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="restaurant" value="milano">
+                                <span>Milano Market</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question mc-question" data-question="14">
+                        <label>14. What's the worst thing to sit next to in a lecture?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="lecture_annoyance" value="gossipers" required>
+                                <span>Two people who won't stop gossiping</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="lecture_annoyance" value="coffee">
+                                <span>A coffee spiller</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="lecture_annoyance" value="bouncer">
+                                <span>A leg bouncer shaking the whole row</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="lecture_annoyance" value="phone">
+                                <span>A phone addict with bright screen</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question mc-question" data-question="15">
+                        <label>15. Which app are you always on?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="app" value="tiktok" required>
+                                <span>TikTok</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="app" value="instagram">
+                                <span>Instagram</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="app" value="beli">
+                                <span>Beli</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="app" value="sidechat">
+                                <span>Sidechat</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="app" value="none">
+                                <span>None of the above (I'm better than everyone else)</span>
+                            </label>
+                        </div>
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <button type="submit" class="page-btn">Find My Twin</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="typeform-footer">
+                    <div class="question-counter">Question <span id="currentQuestion2">8</span> of <span id="totalQuestions2">15</span></div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar2" style="width: 50%"></div>
+                    </div>
+                    <div class="controls">
+                        <button type="button" class="control-btn" id="prevBtn2" disabled>&larr;</button>
+                        <button type="button" class="control-btn" id="nextBtn2">&rarr;</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="page-navigation">
+                <button type="button" class="page-btn" id="backToPage1">Back to Part 1</button>
+            </div>
+        </div>
+    </form>
+
+  
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up Page 1
+            setupTypeform('1', 7);
+            
+            // Set up Page 2
+            setupTypeform('2', 8);
+            
+            // Page navigation
+            document.getElementById('goToPage2').addEventListener('click', function() {
+                document.querySelector('.quiz-page-1').classList.remove('active');
+                document.querySelector('.quiz-page-2').classList.add('active');
+                
+                // Force recalculation of heights on page switch
+                const activeQuestion = document.querySelector('.quiz-page-2 .question.active');
+                if (activeQuestion) {
+                    const questionHeight = activeQuestion.offsetHeight;
+                    const questionsWrapper = document.querySelector('.quiz-page-2 .questions-wrapper');
+                    const footerHeight = document.querySelector('.quiz-page-2 .typeform-footer').offsetHeight;
+                    
+                    questionsWrapper.style.height = (questionHeight + 20) + 'px';
+                    
+                    const logoHeight = document.querySelector('.quiz-page-2 .logo').offsetHeight;
+                    const container = document.querySelector('.quiz-page-2 .quiz-container');
+                    container.style.height = (logoHeight + questionHeight + footerHeight + 40) + 'px';
+                }
+                
+                window.scrollTo(0, 0);
+            });
+            
+            document.getElementById('backToPage1').addEventListener('click', function() {
+                document.querySelector('.quiz-page-2').classList.remove('active');
+                document.querySelector('.quiz-page-1').classList.add('active');
+                window.scrollTo(0, 0);
+            });
+            
+            // Function to set up Typeform behavior
+            function setupTypeform(pageNum, questionCount) {
+                const questions = document.querySelectorAll(`.quiz-page-${pageNum} .question`);
+                const prevBtn = document.getElementById(`prevBtn${pageNum}`);
+                const nextBtn = document.getElementById(`nextBtn${pageNum}`);
+                const currentQuestionSpan = document.getElementById(`currentQuestion${pageNum}`);
+                const totalQuestionsSpan = document.getElementById(`totalQuestions${pageNum}`);
+                const progressBar = document.getElementById(`progressBar${pageNum}`);
+                let currentIndex = 0;
+                
+                function updateProgressBar() {
+                    let progress;
+                    if (pageNum === '1') {
+                        progress = ((currentIndex) / (questions.length - 1)) * 50; // First page is 50% of total
+                    } else {
+                        // Start at 50% (first page complete) and go to 100%
+                        progress = 50 + ((currentIndex) / (questions.length - 1)) * 50;
+                    }
+                    progressBar.style.width = `${progress}%`;
+                }
+                
+                function updateQuestionCounter() {
+                    // Get the question number from the data attribute
+                    const displayNum = parseInt(questions[currentIndex].dataset.question);
+                    currentQuestionSpan.textContent = displayNum;
+                }
+                
+                function updateButtons() {
+                    prevBtn.disabled = currentIndex === 0;
+                    nextBtn.disabled = currentIndex === questions.length - 1;
+                    
+                    if (currentIndex === questions.length - 1) {
+                        nextBtn.style.visibility = 'hidden';
+                    } else {
+                        nextBtn.style.visibility = 'visible';
+                    }
+                }
+                
+                function showQuestion(index) {
+                    questions.forEach((q, i) => {
+                        q.classList.remove('active', 'previous', 'next');
+                        
+                        if (i < index) {
+                            q.classList.add('previous');
+                        } else if (i > index) {
+                            q.classList.add('next');
+                        } else {
+                            q.classList.add('active');
+                        }
+                    });
+                    
+                    currentIndex = index;
+                    updateButtons();
+                    updateQuestionCounter();
+                    updateProgressBar();
+                    
+                    // Show/hide submit button based on if this is the last question
+                    const submitBtn = document.querySelector(`.quiz-page-${pageNum} .question[data-question="15"] button[type="submit"]`);
+                    if (submitBtn) {
+                        if (parseInt(questions[currentIndex].dataset.question) === 15) {
+                            submitBtn.style.display = 'inline-block';
+                        } else {
+                            submitBtn.style.display = 'none';
+                        }
+                    }
+                    
+                    // Adjust container height to fit active question
+                    requestAnimationFrame(() => {
+                        adjustContainerHeight();
+                    });
+                }
+                
+                function adjustContainerHeight() {
+                    // Get the active question and adjust container height
+                    const activeQuestion = document.querySelector(`.quiz-page-${pageNum} .question.active`);
+                    if (activeQuestion) {
+                        const questionHeight = activeQuestion.offsetHeight;
+                        const questionsWrapper = document.querySelector(`.quiz-page-${pageNum} .questions-wrapper`);
+                        const footerHeight = document.querySelector(`.quiz-page-${pageNum} .typeform-footer`).offsetHeight;
+                        
+                        // Set exact height to fit the content plus a small margin
+                        questionsWrapper.style.height = (questionHeight + 10) + 'px';
+                        
+                        // Adjust container height as well
+                        const logoHeight = document.querySelector(`.quiz-page-${pageNum} .logo`).offsetHeight || 70;
+                        const container = document.querySelector(`.quiz-page-${pageNum} .quiz-container`);
+                        
+                        // Set a minimum height to prevent disappearing - but keep it compact
+                        const calculatedHeight = logoHeight + questionHeight + footerHeight + 20;
+                        container.style.height = Math.max(250, calculatedHeight) + 'px';
+                    }
+                }
+                
+                // Auto-advance on radio button selection
+                questions.forEach(question => {
+                    const radioButtons = question.querySelectorAll('input[type="radio"]');
+                    radioButtons.forEach(radio => {
+                        radio.addEventListener('change', () => {
+                            setTimeout(() => {
+                                if (currentIndex < questions.length - 1) {
+                                    showQuestion(currentIndex + 1);
+                                }
+                            }, 500);
+                        });
+                    });
+                });
+                
+                // Next button
+                nextBtn.addEventListener('click', () => {
+                    if (currentIndex < questions.length - 1) {
+                        showQuestion(currentIndex + 1);
+                    }
+                });
+                
+                // Previous button
+                prevBtn.addEventListener('click', () => {
+                    if (currentIndex > 0) {
+                        showQuestion(currentIndex - 1);
+                    }
+                });
+                
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    // Only apply keyboard navigation to active page
+                    if (!document.querySelector(`.quiz-page-${pageNum}`).classList.contains('active')) {
+                        return;
+                    }
+                    
+                    if (e.key === 'ArrowRight' && currentIndex < questions.length - 1) {
+                        showQuestion(currentIndex + 1);
+                    } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                        showQuestion(currentIndex - 1);
+                    }
+                });
+                
+                // Initialize first question
+                showQuestion(0);
+                
+                // Make sure container heights are initialized correctly
+                window.addEventListener('resize', adjustContainerHeight);
+                
+                // For page 2, ensure question 8 is visible when switching pages
+                if (pageNum === '2') {
+                    setTimeout(adjustContainerHeight, 100);
+                }
+            }
+        });
+        
+        // Form submission
+        document.getElementById('quizForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                const response = await fetch('/submit-quiz', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    window.location.href = '/completion';
+                } else {
+                    alert(result.error || 'Something went wrong. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Something went wrong. Please try again.');
+            }
+        });
+
+        // Add direct event listener to the Find My Twin button
+        document.addEventListener('DOMContentLoaded', function() {
+            const submitButton = document.querySelector('.question[data-question="15"] button[type="submit"]');
+            if (submitButton) {
+                submitButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(document.getElementById('quizForm'));
+                    const data = Object.fromEntries(formData.entries());
+                    
+                    fetch('/submit-quiz', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            window.location.href = '/completion';
+                        } else {
+                            alert(result.error || 'Something went wrong. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Something went wrong. Please try again.');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

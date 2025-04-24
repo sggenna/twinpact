@@ -1,0 +1,363 @@
+/* Page load animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+body {
+    background: linear-gradient(to bottom, #600213, #380101);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 2rem;
+    color: #F6F4F0;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+.page-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.logo {
+    height: 250px;
+    width: 250px;
+    margin: -25px auto -10px;
+    display: block;
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out 0.5s forwards;
+}
+
+h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    margin-top: -20px;
+    text-align: center;
+    color: #600213;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out 0.7s forwards;
+}
+
+.form-container {
+    background: #F6F4F0;
+    padding: 2.5rem;
+    border-radius: 30px;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: containerPulse 3s infinite, fadeIn 1s ease-out 0.3s forwards;
+    opacity: 0;
+}
+
+.form-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+input[type="text"], 
+input[type="email"], 
+input[type="tel"], 
+.form-select {
+    width: 100%;
+    height: 3.5rem;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    font-family: 'Courier New', monospace;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    background: white;
+    color: #380101;
+    box-sizing: border-box;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #600213;
+    box-shadow: 0 0 8px rgba(96, 2, 19, 0.2);
+    background-color: #fff;
+    transform: translateY(-2px);
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="tel"]::placeholder {
+    color: #999;
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus::placeholder,
+input[type="email"]:focus::placeholder,
+input[type="tel"]:focus::placeholder {
+    color: #600213;
+    transform: translateX(5px);
+}
+
+.form-select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23380101' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #600213;
+    box-shadow: 0 0 8px rgba(96, 2, 19, 0.2);
+    background-color: #fff;
+    transform: translateY(-2px);
+}
+
+.form-select option {
+    padding: 0.8rem;
+    background-color: white;
+    color: #380101;
+    font-family: 'Courier New', monospace;
+}
+
+.form-select:disabled {
+    color: #999;
+    cursor: default;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    .form-container {
+        padding: 1.5rem;
+        max-width: 90%;
+    }
+    
+    .form-group {
+        grid-template-columns: 1fr;
+    }
+    
+    h1 {
+        font-size: 1.6rem;
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    .form-select {
+        padding: 0.7rem;
+    }
+    
+    .submit-button {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .logo {
+        height: 120px;
+        width: 120px;
+        margin-bottom: 10px;
+    }
+}
+
+.form-container:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+}
+
+.subtitle {
+    color: #600213;
+    font-size: 0.9rem;
+    margin-top: -15px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: 400;
+    opacity: 0;
+    font-family: 'Courier New', monospace;
+    animation: fadeIn 0.6s ease-out 0.9s forwards;
+}
+
+/* Add staggered animation to form fields */
+#name {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out 1.1s forwards;
+}
+
+#email {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out 1.2s forwards;
+}
+
+#phone {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out 1.3s forwards;
+}
+
+#year {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out 1.4s forwards;
+}
+
+#major {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out 1.5s forwards;
+}
+
+#campus {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out 1.6s forwards;
+}
+
+.submit-button {
+    display: block;
+    width: fit-content;
+    margin: 3rem auto 1rem;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-family: 'Courier New', monospace;
+    background-color: #600213;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out 1.8s forwards;
+}
+
+.submit-button:hover {
+    background-color: #4f1111;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.submit-button:active {
+    transform: translateY(0);
+}
+
+.submit-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.submit-button:hover::before {
+    left: 100%;
+}
+
+footer {
+    margin-top: 3rem;
+    color: #F6F4F0;
+    font-size: 0.85rem;
+    text-align: center;
+    opacity: 0.8;
+    font-family: 'Courier New', monospace;
+}
+
+input[type="text"]:focus-visible,
+input[type="email"]:focus-visible,
+input[type="tel"]:focus-visible {
+    outline: none;
+}
+
+.success-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #F6F4F0;
+    padding: 2rem 3rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    z-index: 1000;
+    display: none;
+    border: 1px solid #600213;
+}
+
+.success-message p {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    color: #380101;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Add star twinkling animation */
+@keyframes twinkle {
+    0% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0.7; transform: scale(1); }
+}
+
+/* Add some decorative stars like in the reference design */
+.form-container::before {
+    content: '★';
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 24px;
+    color: #600213;
+    opacity: 0.7;
+    animation: twinkle 2s infinite ease-in-out;
+}
+
+.form-container::after {
+    content: '★';
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    font-size: 24px;
+    color: #600213;
+    opacity: 0.7;
+    animation: twinkle 2s infinite ease-in-out 1s; /* 1s delay creates alternating effect */
+}
+
+/* animation for the form container */
+@keyframes containerPulse {
+    0% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+    50% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); }
+    100% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+}
+

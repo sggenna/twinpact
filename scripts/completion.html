@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twin Pact - Finding Your Twin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #4f1111;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: #F6F4F0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 800px;
+            text-align: center;
+            padding: 2.5rem;
+            position: relative;
+            background-color: #F6F4F0;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            overflow: hidden;
+        }
+        
+        
+        h1 {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            color: #4f1111;
+            letter-spacing: 1px;
+        }
+        
+        /* Animated ellipsis */
+        .loading-ellipsis {
+            display: inline-block;
+            position: relative;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .loading-ellipsis span {
+            position: absolute;
+            top: -3px;
+            opacity: 0;
+            animation: ellipsis 1.5s infinite;
+        }
+        
+        .loading-ellipsis span:nth-child(1) {
+            animation-delay: 0s;
+            left: 0;
+        }
+        
+        .loading-ellipsis span:nth-child(2) {
+            animation-delay: 0.3s;
+            left: 10px;
+        }
+        
+        .loading-ellipsis span:nth-child(3) {
+            animation-delay: 0.6s;
+            left: 20px;
+        }
+        
+        @keyframes ellipsis {
+            0% { opacity: 0; }
+            25% { opacity: 1; }
+            50% { opacity: 1; }
+            75% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            color: #4f1111;
+        }
+        
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background-color: #4f1111;
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .button:hover {
+            background-color: #e78641;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .star {
+            position: absolute;
+            color: #fff;
+            opacity: 0.7;
+            z-index: 1;
+        }
+        
+        .section-divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+        }
+        
+        .divider-line {
+            flex-grow: 1;
+            height: 1px;
+            background-color: #4f1111;
+        }
+        
+        .divider-star {
+            margin: 0 15px;
+            color:#4f1111;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="section-divider">
+            <div class="divider-line"></div>
+            <div class="divider-star">★</div>
+            <div class="divider-line"></div>
+        </div>
+        
+        <h1>
+            Finding Your Twin Flame
+            <span class="loading-ellipsis">
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+            </span>
+        </h1>
+        
+        <p>Thank you for completing your profile! We're now working our magic to find your perfect match.</p>
+        
+        <p>Stay tuned for our upcoming <strong>Meet Day</strong> where you'll connect with your new bestie!</p>
+        
+        <p>We'll be in touch via email with all the exciting details.</p>
+        
+        <div class="section-divider">
+            <div class="divider-line"></div>
+            <div class="divider-star">★</div>
+            <div class="divider-line"></div>
+        </div>
+        
+        <a href="beg-page.html" class="button">Return Home</a>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            addStars();
+        });
+        
+        function addStars() {
+            const numberOfStars = 20;
+            const body = document.body;
+            const maxWidth = window.innerWidth;
+            const maxHeight = window.innerHeight;
+            
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.textContent = '★';
+                star.classList.add('star');
+                
+                // Random position
+                const left = Math.random() * maxWidth;
+                const top = Math.random() * maxHeight;
+                
+                // Random size
+                const size = Math.random() * 1.5 + 0.5;
+                
+                // Random opacity
+                const opacity = Math.random() * 0.5 + 0.2;
+                
+                star.style.left = `${left}px`;
+                star.style.top = `${top}px`;
+                star.style.fontSize = `${size}rem`;
+                star.style.opacity = opacity;
+                
+                body.appendChild(star);
+            }
+        }
+    </script>
+</body>
+</html> 

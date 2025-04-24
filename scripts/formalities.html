@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twin Pact - Formalities</title>
+    <link rel="stylesheet" href="formalities.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Preloader styles */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #600213;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        }
+        
+        .preloader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .preloader-content {
+            text-align: center;
+            color: #F6F4F0;
+        }
+        
+        .preloader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #F6F4F0;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="preloader-content">
+            <div class="preloader-spinner"></div>
+            <p>Loading Twin Pact...</p>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <div class="form-container">
+            <img src="logo.png" alt="Twin Pact Logo" class="logo">
+            <p class="subtitle">Tell us a bit about yourself to help us find your match</p>
+
+            <form id="matchForm" onsubmit="handleSubmit(event)">
+                <input type="text" id="name" name="name" placeholder="Your Name" required>
+                <input type="email" id="email" name="email" placeholder="Your Email" required>
+                <input type="tel" id="phone" name="phone" placeholder="Your Phone Number" required>
+                <select id="year" name="year" class="form-select" required>
+                    <option value="" disabled selected>Class Year</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                </select>
+                <input type="text" id="major" name="major" placeholder="Major" required>
+                <select id="campus" name="campus" class="form-select" required>
+                    <option value="" disabled selected>School</option>
+                    <option value="Columbia College">Columbia College</option>
+                    <option value="SEAS">SEAS</option>
+                    <option value="GS">GS</option>
+                    <option value="Barnard">Barnard</option>
+                </select>            
+                <button type="submit" class="submit-button">Find My Match</button>
+            </form>
+        </div>
+
+        <div id="successMessage" class="success-message">
+            <p>Thank you for your submission! Redirecting to quiz...</p>
+        </div>
+
+        <footer>
+            <p>© Barnard Columbia Design for America</p>
+        </footer>
+    </div>
+
+    <script>
+        // Preloader fadeout
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.querySelector('.preloader').classList.add('fade-out');
+            }, 500);
+        });
+    
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    form.reset();
+                    document.getElementById('successMessage').style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = '/quiz';
+                    }, 2000);
+                } else {
+                    alert('There was an error submitting your form. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('There was an error submitting your form. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+

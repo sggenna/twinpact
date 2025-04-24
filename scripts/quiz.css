@@ -1,0 +1,209 @@
+body {
+    background: linear-gradient(to bottom,  #f2ae72, #4f1111); 
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 2rem;
+    color: #333;
+    line-height: 1.6;
+}
+
+.page-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+img {
+    height:250px;
+    width: 250px;
+   margin-top: -50px;
+   align-items: center;
+}
+
+/* Quiz Container */
+.quiz-container {
+    background: #F6F4F0;
+    padding: 2.5rem;
+    border-radius: 30px;
+    width: 100%;
+    max-width: 800px;
+}
+
+.questions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Slider Questions */
+.slider-question {
+    margin-bottom: 0.5rem;
+}
+
+.slider-question label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+    color: #333;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #666;
+    font-family: 'Inter', sans-serif;
+}
+
+input[type="range"] {
+    width: 95%;
+    height: 2px;
+    background: #4f1111;
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+    margin: 1rem 0;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #C09188;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+/* Multiple Choice Questions */
+.mc-question {
+    margin-bottom: 0.5rem;
+}
+
+.mc-question label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+    color: #000000;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.option:hover {
+    border-color: #333;
+    background: #F8F8F8;
+}
+
+.option input[type="radio"] {
+    margin-right: 1rem;
+    width: 16px;
+    height: 16px;
+}
+
+.option span {
+    font-size: 0.8rem;
+    color: #333;
+}
+.backToPage1{
+    background-color: #F6F4F0;
+    color:#380202;
+}
+/* Submit Button */
+.submit-button {
+    display: block;
+    width: fit-content;
+    margin: 3rem auto 1rem;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-family: 'Courier New', monospace;
+    background-color: #380202;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+}
+
+.submit-button:hover {
+    background-color: #555;
+    transform: translateY(-1px);
+}
+
+/* Success Message */
+.success-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #F6F4F0;
+    padding: 2rem 3rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    z-index: 1000;
+    display: none;
+}
+
+.success-message p {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    color: #333;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    .quiz-container {
+        padding: 1.5rem;
+    }
+
+    .slider-labels span {
+        font-size: 0.8rem;
+    }
+
+    .option {
+        padding: 0.6rem 0.8rem;
+    }
+
+    .submit-button {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+    }
+} 
