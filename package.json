@@ -1,11 +1,14 @@
 {
   "name": "twinpact",
   "version": "1.0.0",
-  "description": "",
-  "main": "script.js",
+  "description": "A twin matching application for students to find compatible study partners",
+  "main": "backend/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "build": "echo 'No build step required'",
+    "vercel-build": "echo 'No build step required'"
   },
   "keywords": [],
   "author": "",

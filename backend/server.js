@@ -4,32 +4,74 @@ const XLSX = require('xlsx');
 const fs = require('fs');
 const session = require('express-session');
 
+// In-memory data storage for serverless compatibility
+let responsesData = [];
+let quizData = [];
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Basic middleware
 app.use(express.json());
-app.use(express.static('scripts'));
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files
+app.use('/scripts', express.static('scripts'));
+app.use(express.static('.')); // Serve static files from root directory
 
 // Add session middleware
 app.use(session({
     secret: 'twin-pact-secret-key',
-    resave: false,
+    resave: true,
     saveUninitialized: true,
-    cookie: { secure: false, maxAge: 3600000 } // 1 hour
+    cookie: { 
+        secure: false, 
+        maxAge: 3600000, // 1 hour
+        httpOnly: true,
+        sameSite: 'lax'
+    }
 }));
+
+// Static file routes
+app.get('/formalities.css', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'css', 'formalities.css'));
+});
+
+app.get('/quiz.css', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'css', 'quiz.css'));
+});
+
+app.get('/index.css', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'css', 'index.css'));
+});
+
+app.get('/script.js', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'js', 'script.js'));
+});
+
+app.get('/logo.png', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'logo.png'));
+});
 
 // Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'scripts', 'formalities.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'pages', 'index.html'));
+});
+
+app.get('/formalities', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'pages', 'formalities.html'));
 });
 
 app.get('/quiz', (req, res) => {
     if (!req.session.userData) {
         // If no session data, redirect to form
-        return res.redirect('/');
+        return res.redirect('/formalities');
     }
-    res.sendFile(path.join(__dirname, 'scripts', 'quiz.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'pages', 'quiz.html'));
+});
+
+app.get('/completion', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'pages', 'completion.html'));
 });
 
 // Check if user has session data
@@ -48,7 +90,7 @@ app.get('/check-session', (req, res) => {
 });
 
 app.get('/completion', (req, res) => {
-    res.sendFile(path.join(__dirname, 'scripts', 'completion.html'));
+    res.sendFile(path.join(__dirname, 'completion.html'));
 });
 
 // Simple admin authentication
@@ -74,35 +116,59 @@ const adminAuth = (req, res, next) => {
 
 // Admin routes
 app.get('/admin', adminAuth, (req, res) => {
-    res.sendFile(path.join(__dirname, 'scripts', 'admin.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'pages', 'admin.html'));
+});
+
+// API endpoint to get data as JSON (for debugging)
+app.get('/api/data', (req, res) => {
+    try {
+        const combinedData = [];
+        responsesData.forEach(form => {
+            const quiz = quizData.find(q => q.email === form.email);
+            combinedData.push({
+                ...form,
+                ...quiz,
+                form_submitted_at: form.timestamp,
+                quiz_submitted_at: quiz ? quiz.timestamp : null
+            });
+        });
+
+        res.json({
+            formResponses: responsesData,
+            quizResponses: quizData,
+            combinedResponses: combinedData,
+            stats: {
+                totalForms: responsesData.length,
+                totalQuizzes: quizData.length,
+                completedProfiles: combinedData.length
+            }
+        });
+    } catch (error) {
+        console.error('Error getting data:', error);
+        res.status(500).json({ error: 'Failed to get data' });
+    }
 });
 
 // Admin-only data viewing
 app.get('/view-data', adminAuth, (req, res) => {
     try {
+        // Create combined data
+        const combinedData = [];
+        responsesData.forEach(form => {
+            const quiz = quizData.find(q => q.email === form.email);
+            combinedData.push({
+                ...form,
+                ...quiz,
+                form_submitted_at: form.timestamp,
+                quiz_submitted_at: quiz ? quiz.timestamp : null
+            });
+        });
+
         let data = {
-            formResponses: [],
-            quizResponses: [],
-            combinedResponses: []
+            formResponses: responsesData,
+            quizResponses: quizData,
+            combinedResponses: combinedData
         };
-
-        // Read form responses
-        if (fs.existsSync('responses.xlsx')) {
-            const formWorkbook = XLSX.readFile('responses.xlsx');
-            data.formResponses = XLSX.utils.sheet_to_json(formWorkbook.Sheets['Form Responses']);
-        }
-
-        // Read quiz responses
-        if (fs.existsSync('quiz_responses.xlsx')) {
-            const quizWorkbook = XLSX.readFile('quiz_responses.xlsx');
-            data.quizResponses = XLSX.utils.sheet_to_json(quizWorkbook.Sheets['Quiz Responses']);
-        }
-
-        // Read combined responses
-        if (fs.existsSync('combined_responses.xlsx')) {
-            const combinedWorkbook = XLSX.readFile('combined_responses.xlsx');
-            data.combinedResponses = XLSX.utils.sheet_to_json(combinedWorkbook.Sheets['Combined Responses']);
-        }
 
         // Create HTML response with escape for safety
         const html = `
@@ -235,34 +301,11 @@ app.post('/submit', (req, res) => {
             timestamp: data.timestamp
         };
         
-        // Load or create workbook
-        let workbook;
-        const filePath = 'responses.xlsx';
+        // Store in memory (serverless compatible)
+        responsesData.push(data);
         
-        if (fs.existsSync(filePath)) {
-            workbook = XLSX.readFile(filePath);
-        } else {
-            workbook = XLSX.utils.book_new();
-            workbook.SheetNames.push('Form Responses');
-            workbook.Sheets['Form Responses'] = XLSX.utils.json_to_sheet([]);
-        }
-        
-        // Get the existing data
-        const sheet = workbook.Sheets['Form Responses'];
-        const existingData = XLSX.utils.sheet_to_json(sheet);
-        
-        // Add new response
-        existingData.push(data);
-        
-        // Update the sheet
-        const newSheet = XLSX.utils.json_to_sheet(existingData);
-        workbook.Sheets['Form Responses'] = newSheet;
-        
-        // Save the file
-        XLSX.writeFile(workbook, filePath);
-        
-        // Update combined sheet
-        updateCombinedSheet();
+        console.log('Form submitted:', data.email);
+        console.log('Total responses:', responsesData.length);
         
         res.json({ success: true });
     } catch (error) {
@@ -274,52 +317,37 @@ app.post('/submit', (req, res) => {
 // Quiz submission endpoint
 app.post('/submit-quiz', (req, res) => {
     try {
-        const quizData = req.body;
+        const quizSubmission = req.body;
         
         // Add timestamp
-        quizData.timestamp = new Date().toISOString();
+        quizSubmission.timestamp = new Date().toISOString();
         
         // Get user data from session and add email to quiz data
         if (req.session.userData && req.session.userData.email) {
-            quizData.email = req.session.userData.email;
+            quizSubmission.email = req.session.userData.email;
+        } else if (quizSubmission.email) {
+            // Fallback: if email is provided directly in the quiz data, use it
+            console.log('Using email from quiz data:', quizSubmission.email);
         } else {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Session data not found. Please fill out the form first.' 
-            });
+            // Try to find the most recent form submission to link with
+            const recentForm = responsesData[responsesData.length - 1];
+            if (recentForm && recentForm.email) {
+                quizSubmission.email = recentForm.email;
+                console.log('Linked quiz to recent form submission:', recentForm.email);
+            } else {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'No user data found. Please fill out the form first and try again.' 
+                });
+            }
         }
         
-        let workbook;
-        const filePath = 'quiz_responses.xlsx';
-
-        // Load or create workbook
-        if (fs.existsSync(filePath)) {
-            workbook = XLSX.readFile(filePath);
-        } else {
-            workbook = XLSX.utils.book_new();
-            workbook.SheetNames.push('Quiz Responses');
-            workbook.Sheets['Quiz Responses'] = XLSX.utils.json_to_sheet([]);
-        }
-
-        // Get existing data
-        let responses = [];
-        if (workbook.SheetNames.includes('Quiz Responses')) {
-            responses = XLSX.utils.sheet_to_json(workbook.Sheets['Quiz Responses']);
-        }
-
-        // Add new response
-        responses.push(quizData);
+        // Store in memory (serverless compatible)
+        quizData.push(quizSubmission);
         
-        // Update the sheet
-        const newSheet = XLSX.utils.json_to_sheet(responses);
-        workbook.Sheets['Quiz Responses'] = newSheet;
-
-        // Save the file
-        XLSX.writeFile(workbook, filePath);
+        console.log('Quiz submitted for:', quizSubmission.email);
+        console.log('Total quiz responses:', quizData.length);
         
-        // Update combined sheet
-        updateCombinedSheet();
-
         res.status(200).json({ success: true, message: 'Quiz submitted successfully' });
     } catch (error) {
         console.error('Error saving quiz response:', error);

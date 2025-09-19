@@ -705,12 +705,38 @@
             }
         });
         
+        // Check session and get user data
+        let userEmail = null;
+        
+        async function checkSession() {
+            try {
+                const response = await fetch('/check-session');
+                const result = await response.json();
+                if (result.hasSession) {
+                    userEmail = result.userData.email;
+                    console.log('Session found for:', userEmail);
+                } else {
+                    console.log('No session found');
+                }
+            } catch (error) {
+                console.error('Error checking session:', error);
+            }
+        }
+        
+        // Check session on page load
+        checkSession();
+
         // Form submission
         document.getElementById('quizForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const form = event.target;
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
+            
+            // Add user email if available
+            if (userEmail) {
+                data.email = userEmail;
+            }
             
             try {
                 const response = await fetch('/submit-quiz', {
@@ -742,6 +768,11 @@
                     e.preventDefault();
                     const formData = new FormData(document.getElementById('quizForm'));
                     const data = Object.fromEntries(formData.entries());
+                    
+                    // Add user email if available
+                    if (userEmail) {
+                        data.email = userEmail;
+                    }
                     
                     fetch('/submit-quiz', {
                         method: 'POST',
