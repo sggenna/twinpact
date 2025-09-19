@@ -1,8 +1,12 @@
 # Twin Pact 
+<img width="400" height="400" alt="Screenshot 2025-09-19 at 1 05 55 PM" src="https://github.com/user-attachments/assets/ee8b0c69-77e1-47f4-93fb-1241f13c33a9" /><img width="400" height="400" alt="Screenshot 2025-09-19 at 12 46 55 PM" src="https://github.com/user-attachments/assets/751a6e57-95bf-4e26-9aeb-58d38b84531d" />
+
+
+
 
 A buddy matching platform designed specifically for Columbia University students to foster campus community connections.
 
-🔗 **[Live Demo](https://twinpact-one.vercel.app/index.html)**
+🔗 **[Live Demo]([https://twinpact-one.vercel.app/index.html](https://twinpact-one.vercel.app/))**
 
 ## About
 
