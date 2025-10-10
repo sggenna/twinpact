@@ -6,7 +6,7 @@
 
 A buddy matching platform designed specifically for Columbia University students to foster campus community connections.
 
-🔗 **[Live Demo]((https://twinpact-one.vercel.app/))**
+🔗 **[Live Demo](https://twinpact-one.vercel.app/)**
 
 ## About
 
